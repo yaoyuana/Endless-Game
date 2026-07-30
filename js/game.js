@@ -71,6 +71,9 @@
     nearMissCooldown: 0,
     morphFlash: 0,
     started: false,
+    hitStop: 0,
+    perfectFlash: 0,
+    banner: null,
   };
 
   let audioCtx = null;
@@ -200,6 +203,10 @@
     state.trail = [];
     state.nearMissCooldown = 0;
     state.morphFlash = 0;
+    state.hitStop = 0;
+    state.perfectFlash = 0;
+    state.banner = { text: "RUN!", color: "#00f0ff", life: 1.1 };
+    state._scoreAcc = 0;
     updateFormUI();
     elScore.textContent = "0";
     elCombo.textContent = "×1";
@@ -437,12 +444,19 @@
 
   function smashReward(e) {
     const matched = e.formMatch && e.formMatch === state.form;
-    const gain = addScore(matched ? 120 : 60);
+    const gain = addScore(matched ? 150 : 70);
     addCombo(matched ? 1 : 0.5);
-    if (matched) fillOverclock(8);
-    else fillOverclock(3);
+    if (matched) {
+      fillOverclock(10);
+      state.hitStop = 0.05;
+      state.perfectFlash = 0.28;
+      state.banner = { text: "PERFECT MATCH", color: entityColor(e), life: 0.7 };
+      beep(880, 0.05, "square", 0.03);
+    } else {
+      fillOverclock(3);
+    }
     const c = entityColor(e);
-    spawnBurst(laneToX(e.lane), perspectiveY(e.z), c, matched ? 22 : 12);
+    spawnBurst(laneToX(e.lane), perspectiveY(e.z), c, matched ? 28 : 12);
     spawnScorePopup(laneToX(e.lane), perspectiveY(e.z) - 20, "+" + gain, c);
     beep(matched ? 660 : 420, 0.07, "square", 0.035);
   }
@@ -451,11 +465,17 @@
     state.t += dt;
     if (state.mode !== "playing") {
       updateDecor(dt * 0.35);
+      updateParticles(dt);
       return;
     }
 
-    const slow = state.overclockActive ? 0.55 : 1;
-    const simDt = dt; // gameplay time stays responsive; visuals use slow overlay
+    if (state.hitStop > 0) {
+      state.hitStop -= dt;
+      updateParticles(dt);
+      return;
+    }
+
+    const simDt = dt;
     const moveScale = state.overclockActive ? 1.15 : 1;
 
     state.baseSpeed = 12 + Math.min(18, state.distance / 180);
@@ -492,8 +512,13 @@
     if (state.pulseTimer > 0) state.pulseTimer -= simDt;
     if (state.invuln > 0) state.invuln -= simDt;
     if (state.morphFlash > 0) state.morphFlash -= simDt;
+    if (state.perfectFlash > 0) state.perfectFlash -= simDt;
     if (state.shake > 0) state.shake -= simDt;
     if (state.nearMissCooldown > 0) state.nearMissCooldown -= simDt;
+    if (state.banner) {
+      state.banner.life -= simDt;
+      if (state.banner.life <= 0) state.banner = null;
+    }
 
     if (state.comboTimer > 0) {
       state.comboTimer -= simDt;
@@ -659,6 +684,24 @@
       ctx.strokeStyle = "rgba(124, 255, 107, 0.35)";
       ctx.lineWidth = 2;
       ctx.strokeRect(10, 10, w - 20, h - 20);
+    }
+
+    if (state.perfectFlash > 0) {
+      ctx.fillStyle = `rgba(255, 255, 255, ${state.perfectFlash * 0.25})`;
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    if (state.banner && state.banner.life > 0) {
+      const a = Math.min(1, state.banner.life * 2);
+      ctx.save();
+      ctx.globalAlpha = a;
+      ctx.font = `900 ${Math.floor(Math.min(42, w * 0.08))}px Orbitron, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.fillStyle = state.banner.color;
+      ctx.shadowColor = state.banner.color;
+      ctx.shadowBlur = 24;
+      ctx.fillText(state.banner.text, w / 2, h * 0.38);
+      ctx.restore();
     }
 
     ctx.restore();
