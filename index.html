@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#05010f" />
+  <meta name="description" content="NEON MORPH — 霓虹赛博无尽跑酷。变形冲刺，连击狂欢。" />
+  <title>NEON MORPH · Endless Runner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%2300f0ff'/%3E%3Cstop offset='1' stop-color='%23ff00aa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpolygon points='32,6 58,54 6,54' fill='none' stroke='url(%23g)' stroke-width='4'/%3E%3Ccircle cx='32' cy='36' r='8' fill='%2300f0ff'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="game" aria-label="NEON MORPH game canvas"></canvas>
+
+    <div id="hud" class="hidden">
+      <div class="hud-top">
+        <div class="stat">
+          <span class="label">SCORE</span>
+          <span id="score">0</span>
+        </div>
+        <div class="stat center">
+          <span class="label">COMBO</span>
+          <span id="combo">×1</span>
+        </div>
+        <div class="stat right">
+          <span class="label">BEST</span>
+          <span id="best">0</span>
+        </div>
+      </div>
+      <div class="meter-wrap">
+        <div class="meter-label">OVERCLOCK</div>
+        <div class="meter"><div id="overclock" class="meter-fill"></div></div>
+      </div>
+      <div id="form-badge" class="form-badge">△ SPIKE</div>
+    </div>
+
+    <div id="overlay" class="screen">
+      <div class="brand-glow"></div>
+      <p class="eyebrow">ENDLESS CYBER RUNNER</p>
+      <h1 class="logo">NEON<br /><span>MORPH</span></h1>
+      <p class="tagline">变形冲刺 · 霓虹逃亡 · 连击上瘾</p>
+      <div class="morph-preview" aria-hidden="true">
+        <div class="morph-card spike active" data-form="spike"><span>△</span><em>SPIKE</em></div>
+        <div class="morph-card glide" data-form="glide"><span>◇</span><em>GLIDE</em></div>
+        <div class="morph-card pulse" data-form="pulse"><span>⬡</span><em>PULSE</em></div>
+      </div>
+      <button id="btn-start" class="btn primary">START RUN</button>
+      <div class="controls-hint">
+        <p><kbd>←</kbd><kbd>→</kbd> 换道 · <kbd>↑</kbd>/<kbd>空格</kbd> 跳 · <kbd>↓</kbd> 滑</p>
+        <p><kbd>Q</kbd>/<kbd>E</kbd> 或 <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 变形 · <kbd>Shift</kbd> 超频</p>
+        <p class="mobile-only">滑动换道 · 上滑跳 · 下滑滑铲 · 点形态按钮变形</p>
+      </div>
+    </div>
+
+    <div id="howto" class="screen hidden">
+      <h2>玩法</h2>
+      <ul>
+        <li><strong class="c-cyan">△ SPIKE</strong> — 跃起砸碎低矮障碍，可跳过横杆</li>
+        <li><strong class="c-mag">◇ GLIDE</strong> — 低姿滑铲，穿过高架激光门</li>
+        <li><strong class="c-gold">⬡ PULSE</strong> — 相位冲刺，短暂穿障并吸能</li>
+        <li>同色障碍可<strong>匹配撞碎</strong>加连击；错配即出局</li>
+        <li>收集能量块填充 <strong>OVERCLOCK</strong>，爆发慢动作狂潮</li>
+      </ul>
+      <button id="btn-howto-close" class="btn">明白了</button>
+    </div>
+
+    <div id="gameover" class="screen hidden">
+      <p class="eyebrow danger">SIGNAL LOST</p>
+      <h2>RUN OVER</h2>
+      <div class="final-stats">
+        <div><span>SCORE</span><strong id="final-score">0</strong></div>
+        <div><span>BEST COMBO</span><strong id="final-combo">×1</strong></div>
+        <div><span>DISTANCE</span><strong id="final-dist">0m</strong></div>
+      </div>
+      <button id="btn-retry" class="btn primary">RETRY</button>
+      <button id="btn-menu" class="btn ghost">MENU</button>
+    </div>
+
+    <div id="touch-ui" class="hidden">
+      <div class="touch-forms">
+        <button class="t-form" data-form="spike" aria-label="Spike form">△</button>
+        <button class="t-form" data-form="glide" aria-label="Glide form">◇</button>
+        <button class="t-form" data-form="pulse" aria-label="Pulse form">⬡</button>
+        <button id="t-overclock" class="t-form over" aria-label="Overclock">⚡</button>
+      </div>
+    </div>
+
+    <button id="btn-howto" class="help-btn" title="How to play">?</button>
+  </div>
+  <script src="js/game.js"></script>
+</body>
+</html>
