@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -16,9 +16,6 @@ concurrency:
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,18 +26,32 @@ jobs:
           mkdir -p _site
           cp index.html .nojekyll _site/
           cp -r css js _site/
-          if [ -d assets ]; then cp -r assets _site/; fi
 
+      # Primary: publish to gh-pages branch (works with contents:write).
+      # Enable once: Settings → Pages → Deploy from a branch → gh-pages → / (root)
+      - name: Publish gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          force_orphan: true
+          enable_jekyll: false
+
+      # Optional Actions-based Pages (after Settings → Pages → Source = GitHub Actions)
       - name: Setup Pages
+        id: pages
+        continue-on-error: true
         uses: actions/configure-pages@v5
         with:
           enablement: true
 
-      - name: Upload artifact
+      - name: Upload Pages artifact
+        if: steps.pages.outcome == 'success'
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
 
       - name: Deploy to GitHub Pages
+        if: steps.pages.outcome == 'success'
         id: deployment
         uses: actions/deploy-pages@v4
