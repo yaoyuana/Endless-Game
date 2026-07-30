@@ -6,14 +6,14 @@
 
 **https://yaoyuana.github.io/Endless-Game/**
 
-### 首次开启 GitHub Pages（只需一次）
+`gh-pages` 分支与 Actions 自动部署已就绪。因权限限制，**首次需仓库 Owner 手动开启 Pages**（约 30 秒）：
 
-1. 打开仓库 [Settings → Pages](https://github.com/yaoyuana/Endless-Game/settings/pages)
-2. **Build and deployment → Source** 选择 **Deploy from a branch**
-3. Branch 选 **`gh-pages`**，目录选 **`/ (root)`**，保存
-4. 约 1 分钟后打开上面的预览地址
+1. 打开 → [Settings → Pages](https://github.com/yaoyuana/Endless-Game/settings/pages)
+2. **Build and deployment → Source** 选 **Deploy from a branch**
+3. Branch 选 **`gh-pages`**，Folder 选 **`/ (root)`** → **Save**
+4. 等待绿色勾后访问预览地址（通常 1 分钟内）
 
-之后每次推送到 `main`，Actions 会自动更新 `gh-pages` 并发布。
+之后每次推送到 `main`，GitHub Actions 会自动更新 `gh-pages` 并发布。
 
 ## 玩法
 

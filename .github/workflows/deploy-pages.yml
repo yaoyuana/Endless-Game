@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -27,8 +25,8 @@ jobs:
           cp index.html .nojekyll _site/
           cp -r css js _site/
 
-      # Primary: publish to gh-pages branch (works with contents:write).
-      # Enable once: Settings → Pages → Deploy from a branch → gh-pages → / (root)
+      # Publishes to gh-pages. Enable once in repo Settings → Pages:
+      # Source = Deploy from a branch → gh-pages → / (root)
       - name: Publish gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -36,22 +34,3 @@ jobs:
           publish_dir: ./_site
           force_orphan: true
           enable_jekyll: false
-
-      # Optional Actions-based Pages (after Settings → Pages → Source = GitHub Actions)
-      - name: Setup Pages
-        id: pages
-        continue-on-error: true
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
-      - name: Upload Pages artifact
-        if: steps.pages.outcome == 'success'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-
-      - name: Deploy to GitHub Pages
-        if: steps.pages.outcome == 'success'
-        id: deployment
-        uses: actions/deploy-pages@v4
